@@ -1,2 +1,2 @@
 # COWTD
-A wind turbine dataset in China
+Database for paper **A temporal dataset of onshore wind turbines in China derived from satellite imagery**
