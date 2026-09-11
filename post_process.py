@@ -1,47 +1,35 @@
-# province = os.listdir("/home/lisibo/YOLO/res")
-import os
+"""Cluster nonempty reference-year tiles within ONE province; export tile groups."""
+import json
+from pathlib import Path
+
+import pandas as pd
 from sklearn.cluster import DBSCAN
-import numpy as np
 
-def lonlat_2_tile(lon,lat,zoom):
-    n = 2 ** zoom
-    x = (lon + 180) / 360 * n
-    y = (1 - (np.log(np.tan(lat * np.pi / 180) + 1 / np.cos(lat * np.pi / 180)) / np.pi)) / 2 * n
-    return x,y
+LABELS = "runs/predict/2024/hebei"
+OUTPUT = "runs/clusters/hebei"
+EPS = 20  # Distance in zoom-17 tile indices, NOT metres.
+MIN_SAMPLES = 10  # Number of tiles, NOT number of turbines.
 
-def tile_2_lonlat(x,y,zoom):
-    n = 2 ** zoom
-    lon = x / n * 360 - 180
-    lat = np.arctan(np.sinh(np.pi * (1 - 2 * y / n))) * 180 / np.pi
-    return lon,lat
 
-province_path = "path-to-detection-results"
-# labels: "x_y.png", where x and y are the tile coordinates in zoom level 17
-labels = []
-# walk through the folder
-for root, dirs, files in os.walk(province_path):
-    for file in files:
-        if file.endswith(".txt"):
-            labels.append(file)
-print("N labels", len(labels))
-xy_lists = []
-for l in labels:
-    x,y = l.split(".")[0].split("_")
-    xy_lists.append([float(x), float(y)])
-xy_lists = np.array(xy_lists)
+def cluster_tiles(labels, output, eps=EPS, min_samples=MIN_SAMPLES):
+    tiles = []
+    for path in sorted(Path(labels).rglob("*.txt")):
+        if path.read_text().strip():  # Empty inference labels are not detections.
+            tiles.append(tuple(map(int, path.stem.split("_"))))  # row, col
+    if len(tiles) != len(set(tiles)):
+        raise ValueError("Duplicate row_col tile filenames")
+    groups = DBSCAN(eps=eps, min_samples=min_samples).fit_predict(tiles) if tiles else []
+    retained = {}
+    for tile, group in zip(tiles, groups):
+        if group >= 0:
+            retained.setdefault(str(int(group)), []).append(list(tile))
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=False)
+    (output / "clusters.json").write_text(json.dumps(retained, indent=2))
+    pd.DataFrame([(r, c, int(g)) for (r, c), g in zip(tiles, groups)],
+                 columns=["row", "col", "cluster"]).to_csv(output / "tile_clusters.csv", index=False)
+    print(f"Tiles: {len(tiles)}; retained: {sum(len(v) for v in retained.values())}")
 
-cluster_result = DBSCAN(eps=20, min_samples=10).fit_predict(xy_lists)
-noisy_index = np.where(cluster_result == -1)[0]
-valid_idx = np.where(cluster_result != -1)[0]
 
-for l in valid_idx:
-    label = labels[l]
-    cluster = cluster_result[l]
-    x,y = label.split(".")[0].split("_")
-    lon, lat = tile_2_lonlat(float(y), float(x), 17)
-    lonlat_square = [
-        tile_2_lonlat(float(y), float(x), 17),
-        tile_2_lonlat(float(y), float(x)+1, 17),
-        tile_2_lonlat(float(y)+1, float(x)+1, 17),
-        tile_2_lonlat(float(y)+1, float(x), 17)
-    ]
+if __name__ == "__main__":
+    cluster_tiles(LABELS, OUTPUT)

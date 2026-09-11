@@ -1,0 +1,11 @@
+# Replace with the absolute path to your local dataset.
+path: /absolute/path/to/dataset
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: turbine
+# Corresponding annotations: labels/train, labels/val, labels/test.
+# Positive and manually confirmed negative images belong in all three splits.
+# Negative images have empty .txt labels. Keep each source image and its
+# augmented variants in the same split to avoid train/test leakage.

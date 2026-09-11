@@ -1,8 +1,13 @@
-import os
-import datetime
-name = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-
+"""Train on local annotated imagery. Edit the paths below before running."""
 from ultralytics import YOLO
 
-model = YOLO("yolo11n.yaml")
-results = model.train(data="path-to-data-yaml", epochs=300, imgsz=256, pretrained=True, name=name, project="log-path")
+DATA = "data/data.yaml"
+MODEL = "models/yolo11n.yaml"  # Local architecture YAML, or a local .pt checkpoint.
+OUTPUT = "runs"
+NAME = "train"
+DEVICE = 0  # GPU index; use "cpu" for CPU.
+
+if __name__ == "__main__":
+    model = YOLO(MODEL)
+    model.train(data=DATA, epochs=300, imgsz=256, pretrained=True,
+                device=DEVICE, project=OUTPUT, name=NAME, exist_ok=False)
