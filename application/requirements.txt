@@ -1,0 +1,5 @@
+numpy==1.26.4
+pandas==2.2.3
+xarray==2024.11.0
+netCDF4==1.7.4
+matplotlib>=3.7,<4

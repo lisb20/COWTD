@@ -73,7 +73,7 @@ def reconstruct(observations, merge_radius=MERGE_RADIUS, year_radius=YEAR_RADIUS
     seed_rows = latest.iloc[seeds]
     return pd.DataFrame({
         "turbine_id": [f"example-{i:06d}" for i in range(1, len(seeds) + 1)],
-        "cluster_id": [f"{p}-{c}" for p, c in zip(seed_rows.province, seed_rows.cluster)],
+        "osm_matched": pd.array([pd.NA] * len(seeds), dtype="Int64"),  # No OSM comparison in this example.
         "score": np.nan,  # Historical 5-column labels do not contain confidence.
         "year": years, "lon": lon, "lat": lat,
         "province": seed_rows.province.to_numpy(),
