@@ -20,7 +20,7 @@ The observation years are 2014, 2017, 2020, 2021, 2022, 2023, and 2024. The 2014
 
 The observation intervals are uneven: three years through 2020 and one year thereafter. Image-acquisition timing and identification errors introduce temporal uncertainty. Compare changes across the available observation intervals; snapshot dates are not exact construction dates. Turbines removed before the early-2024 reference imagery are not included. Higher `score` thresholds select detections with greater model confidence while reducing coverage.
 
-`osm_matched` preserves the paper's maximum-cardinality, one-to-one matching within 100 m against [GOWIRES](https://doi.org/10.5281/zenodo.18768952), using the common comparison boundary. It contains 104,836 matches and 16,013 zeros. The zeros include 15,743 unmatched records within the comparison boundary and 270 records outside it. A zero does not establish the absence of a nearby OSM point, and a one does not mean the turbine was already recorded in OSM in its assigned construction year. The flag does not distinguish nationwide detections from supplementary records.
+`osm_matched` preserves the paper's maximum-cardinality, one-to-one matching within 100 m against [OSM label](https://doi.org/10.5281/zenodo.18768952), using the common comparison boundary. It contains 104,836 matches and 16,013 zeros. The zeros include 15,743 unmatched records within the comparison boundary and 270 records outside it. A zero does not establish the absence of a nearby OSM point, and a one does not mean the turbine was already recorded in OSM in its assigned construction year. The flag does not distinguish nationwide detections from supplementary records.
 
 | Observation year | Cumulative turbine count |
 | --- | ---: |
@@ -45,6 +45,10 @@ provincial_counts = inventory_2020.groupby("province").size()
 ```
 
 Coordinates are in WGS 84 (EPSG:4326). Transform them to a suitable projected coordinate system when calculating planar distances or areas.
+
+## Manual validation samples
+
+[manual_annotations](manual_annotations/README.md) provides one CSV per review experiment, containing only sample identifiers, geographic image bounding boxes, and manual review outcomes. It includes national inventory validation, unmatched-inventory comparisons, clustering-removed candidates, and temporal validation. The folder documents label definitions and sample overlap; satellite images can be accessed through World Imagery Wayback API.
 
 ## Requirements
 
