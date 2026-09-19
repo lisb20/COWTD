@@ -32,7 +32,7 @@ The observation intervals are uneven: three years through 2020 and one year ther
 | 2023 | 107,122 |
 | 2024 | 120,849 |
 
-[data_summary.json](data_summary.json) records the CSV schema, counts, and SHA-256 checksum. The public CSV uses `osm_matched` for the source export's `OSM-recorded` field; the values and all turbine records are preserved.
+The public CSV uses `osm_matched` for the source export's `OSM-recorded` field; the values and all turbine records are preserved.
 
 To load and select an observation-year inventory:
 
