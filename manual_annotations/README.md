@@ -31,6 +31,6 @@ The inventory-review tables retain the original review identifiers. Their boundi
 
 The removed-group identifiers are `N-001`–`N-200`; their bounding boxes describe complete native zoom-17 tiles from the original 2024 image collection. The retained-group table keeps its original inventory-review identifiers and target-centred image extents.
 
-Temporal identifiers are `T001`–`T1000`, corresponding to the original review order. Each row represents one reviewed year assignment, using the same native tile extent across the seven observation years: 2014, 2017, 2020, 2021, 2022, 2023, and 2024. Some historical images are unavailable. These binary labels do not provide per-year presence annotations or corrected construction years. The 1,000 records were sampled across assigned-year and geographic-region strata; their 86.7% agreement is the unweighted sample result.
+Temporal identifiers are `T001`–`T1000`, corresponding to the original review order. Each row represents one reviewed year assignment, using the same native tile extent across the seven observation years: 2014, 2017, 2020, 2021, 2022, 2023, and 2024.  The 1,000 records were sampled across assigned-year and geographic-region strata; their 86.7% agreement is the unweighted sample result.
 
 Only sample identifiers, image extents, and review outcomes are provided here. Satellite images and machine-specific file paths are not included. See [wayback_snapshots.csv](../wayback_snapshots.csv) for historical archive information.

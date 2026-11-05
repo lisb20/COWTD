@@ -1,6 +1,6 @@
 # China Onshore Wind Turbine Dataset (COWTD)
 
-COWTD contains **120,849 onshore wind turbine records** with construction-year estimates spanning 2014–2024. The updated inventory retains 87,714 locations from nationwide satellite-image detection and adds 33,135 nonduplicate locations through OSM-guided image verification. This repository provides the inventory, standalone detection and validation examples, and application code for siting suitability, wind power generation, and wind drought exposure.
+COWTD contains **120,849 onshore wind turbine records** with first-observed-year labels spanning 2014–2024. The updated inventory retains 87,714 locations from nationwide satellite-image detection and adds 33,135 nonduplicate locations through OSM-guided image verification. This repository provides the inventory, standalone detection and validation examples.
 
 ## Dataset
 
@@ -11,7 +11,7 @@ The dataset is available on [figshare](https://doi.org/10.6084/m9.figshare.31939
 | `turbine_id` | Unique turbine record identifier. |
 | `osm_matched` | `1` if matched to an OSM-derived GOWIRES turbine record in the paper's spatial comparison; `0` otherwise. See the matching definition below. |
 | `score` | Object-detection confidence in the reference imagery. Scores are missing for 1,726 records involving multiple overlapping detection boxes; missing values should not be treated as zero. |
-| `year` | Estimated construction year, represented by first-observed presence in the sampled imagery. |
+| `year` | First-observed year in the sampled satellite imagery. |
 | `lon` | WGS 84 longitude in degrees. |
 | `lat` | WGS 84 latitude in degrees. |
 | `province` | Province-level administrative region. |
@@ -20,7 +20,7 @@ The observation years are 2014, 2017, 2020, 2021, 2022, 2023, and 2024. The 2014
 
 The observation intervals are uneven: three years through 2020 and one year thereafter. Image-acquisition timing and identification errors introduce temporal uncertainty. Compare changes across the available observation intervals; snapshot dates are not exact construction dates. Turbines removed before the early-2024 reference imagery are not included. Higher `score` thresholds select detections with greater model confidence while reducing coverage.
 
-`osm_matched` preserves the paper's maximum-cardinality, one-to-one matching within 100 m against [OSM label](https://doi.org/10.5281/zenodo.18768952), using the common comparison boundary. It contains 104,836 matches and 16,013 zeros. The zeros include 15,743 unmatched records within the comparison boundary and 270 records outside it. A zero does not establish the absence of a nearby OSM point, and a one does not mean the turbine was already recorded in OSM in its assigned construction year. The flag does not distinguish nationwide detections from supplementary records.
+`osm_matched` preserves the paper's maximum-cardinality, one-to-one matching within 100 m against [OSM label](https://doi.org/10.5281/zenodo.18768952), using the common comparison boundary. It contains 104,836 matches and 16,013 zeros.
 
 | Observation year | Cumulative turbine count |
 | --- | ---: |
@@ -67,11 +67,10 @@ Run the scripts from this directory. Set the input paths, output paths, and devi
 | `train.py` | Train a YOLO detector using local annotated imagery. |
 | `predict.py` | Run inference on local image tiles and save bounding boxes with confidence scores. |
 | `post_process.py` | Apply DBSCAN to nonempty detection tiles within each province and export retained tile groups. |
-| `construction_year.py` | Convert box centres to geographic coordinates, merge reference-year detections, and assign construction-year estimates from historical observations. |
+| `construction_year.py` | Convert box centres to geographic coordinates, merge reference-year detections, and identify first-observed years from historical observations. |
 | `validation.py` | Evaluate the detector, summarize turbine counts, calculate count–capacity correlations, compare inventories, and summarize temporal review results. |
 | `data.example.yaml` | Example configuration for the training, validation, and test datasets. |
 | `wayback_snapshots.csv` | World Imagery Wayback release IDs, archive dates, source URLs, and observation-year selection. Archive dates are distinct from local imagery acquisition dates. |
-| `application/` | Analysis examples for siting suitability, wind power generation, and wind drought exposure; see the separate input and dependency instructions below. |
 
 ## Example workflow
 
@@ -88,37 +87,6 @@ python predict.py
 python post_process.py
 python construction_year.py
 ```
-
-These scripts illustrate the nationwide-detection component. They do not implement the OSM-guided centred-image supplementation used to expand the released inventory. Running the example workflow does not reconstruct the full released CSV without that additional processing and its source inputs.
-
-The temporal reconstruction uses the following directory layout:
-
-```text
-runs/
-  predict/
-    2014/hebei/row_col.txt
-    2017/hebei/row_col.txt
-    ...
-    2024/hebei/row_col.txt
-  clusters/
-    hebei/clusters.json
-```
-
-Tile filenames use `row_col`. Each label line contains normalized YOLO coordinates in the form `class xc yc width height [confidence]`. DBSCAN defaults to `eps=20` and `min_samples=10`, measured in zoom-17 tile coordinates and tile counts, respectively. Empty labels are excluded from clustering. The temporal script writes an intermediate inventory with run-specific identifiers using the seven-column release schema. It leaves `score` and `osm_matched` unassigned because it does not recover reference scores or perform OSM matching. An unassigned match flag is distinct from the released inventory's `0` and `1` values.
-
-The `comparison` mode in `validation.py` demonstrates a many-to-one proximity check. It does not reproduce the one-to-one matching used for the manuscript comparisons or the released `osm_matched` field.
-
-## Applications
-
-See [application/README.md](application/README.md) for installation and command-line examples. Each module documents its external input formats and statistical definitions:
-
-| Application | Code and instructions |
-| --- | --- |
-| Siting suitability | [suitable_area_share](application/suitable_area_share/README.md): mean suitable-area fraction across occupied grid cells. |
-| Wind power generation | [wind_timeseries](application/wind_timeseries/README.md): inspect simulated power and capacity factors, and integrate hourly power to daily energy. |
-| Wind drought exposure | [wind_drought](application/wind_drought/README.md): frequency and duration statistics across active grid cells. |
-
-Application dependencies are listed separately in `application/requirements.txt`; raster recomputation also requires `application/requirements-recompute.txt`. Supply meteorological inputs, capacity tables, and suitability rasters separately. These external data and generated outputs are not bundled in the repository.
 
 ## Citation
 

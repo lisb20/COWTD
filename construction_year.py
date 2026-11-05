@@ -1,4 +1,4 @@
-"""Estimate construction years from clustered detections in local image tiles."""
+"""Identify first-observed years from clustered detections in local image tiles."""
 import json
 from pathlib import Path
 
