@@ -1,6 +1,6 @@
 # China Onshore Wind Turbine Dataset (COWTD)
 
-COWTD contains **120,849 onshore wind turbine records** with first-observed-year labels spanning 2014–2024. The updated inventory retains 87,714 locations from nationwide satellite-image detection and adds 33,135 nonduplicate locations through OSM-guided image verification. This repository provides the inventory, standalone detection and validation examples.
+COWTD contains **120,849 onshore wind turbine records** with first-observed-year labels spanning 2014–2024. The updated inventory retains 87,714 locations from nationwide satellite-image detection and adds 33,135 nonduplicate locations through OSM-guided image verification. This repository provides the inventory, standalone detection and validation examples, and application code for siting suitability, wind power generation, and wind drought exposure.
 
 ## Dataset
 
@@ -87,6 +87,18 @@ python predict.py
 python post_process.py
 python construction_year.py
 ```
+
+## Applications
+
+See [application/README.md](application/README.md) for installation and command-line examples. Each module documents its external input formats and statistical definitions:
+
+| Application | Code and instructions |
+| --- | --- |
+| Siting suitability | [suitable_area_share](application/suitable_area_share/README.md): mean suitable-area fraction across occupied grid cells. |
+| Wind power generation | [wind_timeseries](application/wind_timeseries/README.md): inspect simulated power and capacity factors, and integrate hourly power to daily energy. |
+| Wind drought exposure | [wind_drought](application/wind_drought/README.md): frequency and duration statistics across active grid cells. |
+
+Application dependencies are listed separately in `application/requirements.txt`; raster recomputation also requires `application/requirements-recompute.txt`. Supply meteorological inputs, capacity tables, and suitability rasters separately. These external data and generated outputs are not bundled in the repository.
 
 ## Citation
 
